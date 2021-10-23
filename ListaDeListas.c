@@ -249,5 +249,3 @@ void capturaMuns(EDO lstEdo){
         }
     }while(res && resp=='s');
 }
-
-/*Test de comentario*/
