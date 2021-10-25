@@ -7,7 +7,7 @@
 typedef struct nodoMun{
     char nomMun[25];
     float egMun;
-    float pobMun;
+    float pobMun; /*El flotante tiene un rango de numeros mayor que el int*/
     float dpMun;
     struct nodoMun *sigMun;
 } *MUN;
@@ -15,7 +15,7 @@ typedef struct nodoMun{
 typedef struct nodoEdo{
     char nomEdo[25];
     float egEdo;
-    float pobEdo;
+    float pobEdo; /*El flotante tiene un rango de numeros mayor que el int*/
     float dpEdo;
     MUN cabMun;
     struct nodoEdo *sigEdo;
@@ -248,4 +248,56 @@ void capturaMuns(EDO lstEdo){
             scanf("%c", &resp);
         }
     }while(res && resp=='s');
+}
+
+/*Función para hacer un recorrido para mostrar la información*/
+/*El recorrido va por estado y luego con sus respectivos municipios*/
+void recorreMuestra(EDO lstEdo){
+    MUN auxMun;
+
+    while(lstEdo){
+        printf("%s:  %.2f  %.0f  %.2f\n", lstEdo->nomEdo, lstEdo->egEdo, lstEdo->pobEdo, lstEdo->dpEdo);
+        auxMun=lstEdo->cabMun;
+        while(auxMun){
+            printf("\t%s:  %.2f  %.0f  %.2f\n", auxMun->nomMun, auxMun->egMun, auxMun->pobMun, auxMun->dpMun);
+            auxMun=auxMun->sigMun;
+        }
+        lstEdo=lstEdo->sigEdo;
+    }
+}
+
+/*Recorrido para mostrar los estados con su No. de municipios*/
+void cuentaMun(EDO lstEdo){
+    int cont=0;
+    MUN auxMun;
+
+    while(lstEdo){
+        auxMun=lstEdo->cabMun;
+        while(auxMun){
+            cont++;
+            auxMun=auxMun->sigMun;
+        }
+        printf("%s tiene %d municipio(s)\n", lstEdo->nomEdo, cont);
+        lstEdo=lstEdo->sigEdo;
+    }
+}
+
+/*Recorrido para encontrar el estado con más municipios*/
+void edoMasMun(EDO lstEdo, char *nEdoMasMun){
+    int cont, masMun=0;
+    MUN auxMun;
+
+    while(lstEdo){
+        auxMun=lstEdo->cabMun;
+        cont=0;
+        while(auxMun){
+            cont++;
+            auxMun=auxMun->sigMun;
+        }
+        if(cont > masMun){
+            masMun=cont;
+            strcpy(nEdoMasMun, lstEdo->nomEdo);
+        }
+        lstEdo=lstEdo->sigEdo;
+    }
 }
