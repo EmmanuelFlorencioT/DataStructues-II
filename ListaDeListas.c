@@ -290,7 +290,7 @@ void edoMasMun(EDO lstEdo, char *nEdoMasMun){
     while(lstEdo){
         auxMun=lstEdo->cabMun;
         cont=0;
-        while(auxMun){
+        while(auxMun){ /*Este ciclo es el responsable de contar los municipios*/
             cont++;
             auxMun=auxMun->sigMun;
         }
@@ -298,6 +298,53 @@ void edoMasMun(EDO lstEdo, char *nEdoMasMun){
             masMun=cont;
             strcpy(nEdoMasMun, lstEdo->nomEdo);
         }
+        lstEdo=lstEdo->sigEdo;
+    }
+}
+
+/*Recorrido RECURSIVO*/
+/*El recorrido se hace igual que la declaración de las estructuras.
+  Comienza desde la más simple y luego se va escalonando a la más complicada.*/
+void recorreMunRec(MUN cabMun){
+    if(cabMun){
+        printf("\t%s: %.2f  %.0f  %.2f\n", cabMun->nomMun, cabMun->egMun, cabMun->pobMun, cabMun->dpMun);
+        recorreMunRec(cabMun->sigMun);
+    }
+}
+void recorreEdoRec(EDO lstEdo){
+    if(lstEdo){
+        printf("%s: %.2f  %.0f  %.2f\n", lstEdo->nomEdo, lstEdo->egEdo, lstEdo->pobEdo, lstEdo->dpEdo);
+        recorreMunRec(lstEdo->cabMun);
+        recorreEdoRec(lstEdo->sigEdo);
+    }
+}
+
+/*Calcular "dp" para los municipios*/
+void calculaDpMun(EDO lstEdo){
+    MUN auxMun;
+
+    while(lstEdo){
+        auxMun=lstEdo->cabMun;
+        while(auxMun){
+            auxMun->dpMun=auxMun->pobMun/auxMun->egMun;
+            auxMun=auxMun->sigMun;
+        }
+        lstEdo=lstEdo->sigEdo;
+    }
+}
+
+/*Función para calcular la población de los estados*/
+void calculaPobEdo(EDO lstEdo){
+    float pob=0;
+    MUN auxMun;
+
+    while(lstEdo){
+        auxMun=lstEdo->cabMun;
+        while(auxMun){
+            pob+=auxMun->pobMun;
+            auxMun=auxMun->sigMun;
+        }
+        lstEdo->pobEdo=pob;
         lstEdo=lstEdo->sigEdo;
     }
 }
