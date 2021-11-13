@@ -80,6 +80,22 @@ int elimRelMR(GRAFO_MR g, int vo, int vd){
     return(res);
 }
 
+int elimVerMR(GRAFO_MR *g, int v){
+    int res=0, pos, i;
+
+    for(pos=0; pos<g->cv && v!=*(g->vecVer+pos);pos++);
+    if(pos<g->cv){
+        g->cv--;
+        *(g->vecVer+pos)=*(g->vecVer+g->cv);
+        for(i=0;i<=g->cv;i++){
+            *(*(g->matRel+pos)+i)=*(*(g->matRel+g->cv)+i);
+            *(*(g->matRel+i)+pos)=*(*(g->matRel+i)+g->cv);
+        }
+        res=1;
+    }
+    return(res);
+}
+
 /*Función de captura de vértices*/
 void capturaVers(GRAFO_MR *g){
     int ver, res;

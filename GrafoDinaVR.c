@@ -142,3 +142,38 @@ void muestraNoRelsVR(GRAFO_VR g, int *idVerMasRel){
         }
     }
 }
+
+/*Funciones para eliminar una relacion*/
+int elimRelVR(GRAFO_VR g, int vo, int vd){
+    int res=0, i;
+
+    for(i=0;i<g.cv && vo!=(g.vecVer+i)->ver;i++);
+    if(i<g.cv)
+        res=elimRelVRaux(&(g.vecVer+i)->cabRel, vd);
+
+    return(res);
+}
+/*-------FUNCION PERSONAL----------*/
+int elimRelVRaux(REL *lr, int vd){
+    int res=0;
+    REL aux, ant;
+
+    aux=*lr;
+    while(aux && vd>aux->vecRel){
+        ant=aux;
+        aux=aux->sigRel;
+    }
+    if(aux && vd==aux->vecRel){
+        if(aux == *lr)
+            *lr=aux->sigRel;
+        else
+            ant->sigRel=aux->sigRel;
+        free(aux);
+        res=1;
+    }
+    return(res);
+}
+
+/*-------FUNCION PERSONAL----------*/
+/*Funcion para elimiar todos las relaciones de un vertice*/
+void elimRelsVerVR()
