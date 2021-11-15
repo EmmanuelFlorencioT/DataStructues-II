@@ -331,7 +331,7 @@ void capturaTipos(RECETARIO *r)
 
    do{
       printf("Introduce el tipo de receta: ");
-      gets(tipo);
+      scanf("%[^\n]",tipo);
       res=insTipo(r, tipo);
       if(res){
          printf("Tipo de receta agregado\n");
@@ -352,9 +352,9 @@ void capturaRecetas(RECETARIO r)
 
    do{
       printf("Introduce la receta: ");
-      gets(rece);
+      scanf("%[^\n]",rece);
       printf("Introduce el tipo de receta: ");
-      gets(tipo);
+      scanf("%[^\n]",tipo);
       res=insReceta(r, tipo, rece);
       if(res){
          printf("Receta agregada a %s\n", tipo);
@@ -375,11 +375,11 @@ void capturaIngredientes(RECETARIO r)
 
    do{
       printf("Introduce el ingrediente: ");
-      gets(ingre);
+      scanf("%[^\n]",ingre);
       printf("Introduce la receta: ");
-      gets(rece);
+      scanf("%[^\n]",rece);
       printf("Introduce el tipo de receta: ");
-      gets(tipo);
+      scanf("%[^\n]",tipo);
       res=insIngrediente(r, tipo, rece, ingre);
       if(res){
          printf("Ingrediente agregado a %s, dentro de %s\n", rece, tipo);
@@ -448,7 +448,7 @@ int cuentaRecetas(RECETARIO r, char *tipo)
    int cont;
 
    while(r && strcmp(tipo, r->nomTipo)>0)
-      r->sigTipo;
+      r=r->sigTipo;
    if(r && strcmp(tipo, r->nomTipo)==0)
       cont=cuentaRece(r->cabRece);
 
@@ -461,9 +461,10 @@ int cuentaIngredientes(RECETARIO r, char *tipo, char *rece)
    int cont;
 
    while(r && strcmp(tipo, r->nomTipo)>0)
-      r->sigTipo;
+      r=r->sigTipo;
    if(r && strcmp(tipo, r->nomTipo)==0)
       cont=cuentaIngreBuscaRece(r->cabRece, rece);
+      return(cont);
 }
 
 /* Cuenta ingredientes: Función para buscar la receta */
