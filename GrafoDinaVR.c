@@ -154,6 +154,7 @@ int elimRelVR(GRAFO_VR g, int vo, int vd){
     return(res);
 }
 /*-------FUNCION PERSONAL----------*/
+/*Funciones para eliminar una relacion auxiliar*/
 int elimRelVRaux(REL *lr, int vd){
     int res=0;
     REL aux, ant;
@@ -176,4 +177,32 @@ int elimRelVRaux(REL *lr, int vd){
 
 /*-------FUNCION PERSONAL----------*/
 /*Funcion para elimiar todos las relaciones de un vertice*/
-void elimRelsVerVR()
+void elimRelsVerVR(REL *lstRel){
+    if(*lstRel){
+        elimRelsVerVR(&(*lstRel)->sigRel);
+        free(*lstRel);
+        *lstRel=NULL;
+    }
+}
+
+/*-------FUNCION PERSONAL----------*/
+/*Funcion que elimina las relaciones de todo el grafo con un vertice en particular*/
+int elimRelConVerVR(GRAFO_VR g,int v){
+    int res=0, i;
+
+    for(i=0;i<g.cv && !res;i++)
+        res=elimRelVRaux(&(g.vecVer+i)->cabRel, v);
+    return(res);
+}
+
+int elimVerVR(GRAFO_VR *g, int v){
+    int res=0, i;
+
+    for(i=0;i<g->cv && !res;i++){
+        if(v==(g->vecVer+i)->ver)
+        elimRelsVerVR(&(g->vecVer)->cabRel);
+        elimRelConVerVR(*g, v);
+        g->cv--;
+        *(g->vecVer+i)=*(g->vecVer+g->cv);
+    }
+}
