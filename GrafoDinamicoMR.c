@@ -149,7 +149,7 @@ void muestraGrafo(GRAFO_MR g){
         printf("%d=> ", *(g.vecVer+ren));
         for(col=0;col<g.cv;col++)
             if(*(*(g.matRel+ren)+col))
-                printf("%d ", *(g.vecVer+ren));
+                printf("%d ", *(g.vecVer+col));
             printf("\n");
     }
 }
