@@ -1,134 +1,95 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
-typedef struct{
-    int nmax;
-    int cv;
-    int *vecVer;
-    int **matRel;
-} GRAFO_MR;
+typedef struct nodoVJ{
+    char cveNum[10];
+    char nomVJ[25];
+    float precio;
+    int cantEx;
+    struct nodoVJ *sigVJ;
+} *VJ;
 
-int iniGrafoMR(GRAFO_MR *g, int nm);
-int insVerMR(GRAFO_MR *g, int v);
-int insRelMR(GRAFO_MR g, int vo, int vd);
-void muestraGrafo(GRAFO_MR g);
-int elimRelMR(GRAFO_MR g, int vo, int vd);
-int elimVerMR(GRAFO_MR *g, int v);
+typedef struct nodoSucu{
+    char cveCad[15];
+    char nomSucu[25];
+    VJ cabVJ;
+    struct nodoSucu *sigSuc;
+} *SUC;
 
-int main(){
-    GRAFO_MR graf;
+typedef struct nodoPais{
+    char cveNumP[10];
+    char nomPais[25];
+    SUC cabSucu;
+    struct nodoPais *sigPais;
+} *PAIS;
 
-    iniGrafo(&graf, 5);
-    insVerMR(&graf, 1);
-    insVerMR(&graf, 2);
-    insVerMR(&graf, 3);
-    insRelMR(graf, 1, 2);
-    insRelMR(graf, 1, 3);
-    insRelMR(graf, 2, 1);
-    muestraGrafo(graf);
-    elimRelMR(graf, 1, 2);
-    elimVerMR(&graf, 3);
+/*Prob 2*/
+void muestraCli(CLI cabC){
+    if(cabC){
+        printf("Clave Cliente: %s\t", cabC->claveCli);
+        printf("Nombre Cliente: %s\t", cabC->nomCli);
+        printf("Monto total: %.2f\t", cabC->total);
+        printf("\n");
+        muestraCli(cabC->sigCli);
+    }
 }
 
+void muestraVen(VEND cabV){
+    if(cabV){
+        printf("Clave Vendedor: %s\t", cabV->claveVend);
+        printf("Nombre Vendedor: %s\t", cabV->nomVend);
+        printf("\nClientes:\n");
+        muestraCli(cabV->cabCli);
+        printf("\n");
+        muestraVen(cabV->sigVend);
+    }
+}
 
+void muestraSuc(SUC cabS){
+    if(cabS){
+        printf("Clave Sucursal: %s\t", cabS->claveSuc);
+        printf("Nombre Sucursal: %s\t", cabS->nomSuc);
+        printf("\nVendedores:\n");
+        muestraVen(cabS->cabVend);
+        printf("\n");
+        muestraSuc(cabS->sigSuc);
+    }
+}
 
+/*Prob 3*/
+void calcTotVtaXSuc(SUC cabSu){
+    float total;
+    VEND auxVen;
+    VTA auxVta;
 
-/*INICIALIZACION*/
-int iniGrafoMR(GRAFO_MR *g, int nm){
-    int res=0, ren;
-
-    g->vecVer=(int *)malloc(sizeof(int)*nm);
-    if(g->vecVer){
-        g->matRel=(int **)malloc(sizeof(int *)*nm);
-        if(g->matRel){
-            res=1;
-            for(ren=0;ren<nm && res;ren++){
-                *(g->matRel+ren)=(int *)malloc(sizeof(int)*nm);
-                if(!*(g->matRel+ren)){
-                    res=0;
-                    while(--ren >= 0)
-                        free(*(g->matRel+ren));
-                    free(g->matRel);
-                    free(g->vecVer);
-                }
+    while(cabSu){
+        total=0;
+        auxVen=cabSuc->cabVend;
+        while(auxVen){
+            auxVta=auxVen->cabVta;
+            while(auxVta){
+                total+=auxVta->montoVta;
+                auxVta=auxVta->sigVta;
             }
-            if(res){
-                g->nmax=nm;
-                g->cv=0;
-            }
+            auxVen=auxVen->sigVend;
         }
-    }
-    return(res);
-}
-
-/*INSERCION DE VERTICE*/
-int insVerMR(GRAFO_MR *g, int v){
-    int res=0, i;
-
-    if(g->cv < g->nmax){
-        *(g->vecVer+g->cv)=v;
-        for(i=0;i<=g->cv;i++)
-            *(*(g->matRel+g->cv)+i) = *(*(g->matRel+i)+g->cv) = 0;
-        g->cv++;
-        res=1;
-    }
-    return(res);
-}
-
-/*INSERCION DE RELACION*/
-int insRelMR(GRAFO_MR g, int vo, int vd){
-    int res=0, col, ren;
-
-    /*Ciclo de búsqueda del vector origen*/
-    for(ren=0; ren<g.cv && vo!=*(g.vecVer+ren);ren++);
-    if(ren<g.cv){ /*Será true cuando encuentre el vector origen*/
-        /*Ciclo de búsqueda del vector destino*/
-        for(col=0;col<g.cv && vd!=*(g.vecVer+col);col++);
-        if(col<g.cv)
-            *(*(g.matRel+ren)+col)=res=1;
-    }
-    return(res);
-}
-
-void muestraGrafo(GRAFO_MR g){
-    int ren, col;
-
-    for(ren=0;ren<g.cv;ren++){
-        printf("%d=> ", *(g.vecVer+ren));
-        for(col=0;col<g.cv;col++)
-            if(*(*(g.matRel+ren)+col))
-                printf("%d ", *(g.vecVer+ren));
-            printf("\n");
+        cabSu->totalSuc=total;
+        cabSu=cabSu->sigSuc;
     }
 }
 
-/*ELIMINACION DE RELACION*/
-int elimRelMR(GRAFO_MR g, int vo, int vd){
-    int res=0, col, ren;
+/*Prob 4*/
+int calcVerRelConTodos(GRAFO_MR g){
+    int contAct, contRes=0, i, j;
 
-    for(ren=0; ren<g.cv && vo!=*(g.vecVer+ren);ren++);
-    if(ren<g.cv){
-        for(col=0;col<g.cv && vd!=*(g.vecVer+col);col++);
-        if(col<g.cv){
-            *(*(g.matRel+ren)+col)=0;
-            res=1;
-        }
+    for(i=0;i<g.cv;i++){
+        contAct=0;
+        for(j=0;j<g.cv;j++)
+            if(i!=j) /*Aseguro que las relaciones no sean con uno mismo*/
+                contAct+=*(*(g.matRel+i)+j);
+        if(contAct==(g.cv-1))
+            contRes++;
     }
-    return(res);
-}
-
-int elimVerMR(GRAFO_MR *g, int v){
-    int res=0, pos, i;
-
-    for(pos=0; pos<g->cv && v!=*(g->vecVer+pos);pos++);
-    if(pos<g->cv){
-        g->cv--;
-        *(g->vecVer+pos)=*(g->vecVer+g->cv);
-        for(i=0;i<=g->cv;i++){
-            *(*(g->matRel+pos)+i)=*(*(g->matRel+g->cv)+i);
-            *(*(g->matRel+i)+pos)=*(*(g->matRel+i)+g->cv);
-        }
-        res=1;
-    }
-    return(res);
+    return(contRes); /*Conteo para el Resultado*/
 }
