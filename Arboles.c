@@ -94,7 +94,7 @@ void posOrden(AB a){
 
 /*-----Funciones Recorrido--------*/
 /*Funcion para calcular el peso (No. de nodos) de un arbol*/
-int calculaPesoAB(AB a){
+int calcPesoAB(AB a){
     int res;
 
     if(!a)
@@ -105,6 +105,39 @@ int calculaPesoAB(AB a){
 }
 
 /*Calcular el peso de un arbol por medio de un parametro por referencia*/
-void calculaPesoAB(AB a, int *peso){
-    
+void calcPesoABref(AB a, int *peso){
+    int pIzq, pDer; /*Peso izquierdo, Peso Derecho*/
+
+    if(!a)
+        *peso=0;
+    else{
+        pesoAB(a->izq, &pIzq);
+        pesoAB(a->der, &pDer);
+        *peso=1+pIzq+pDer; /*Aquí se determina que es preOrden*/
+    }
+}
+
+/*Funcion para calcular el "costo" de un arbol (La suma de los valores de todos los nodos del arbol)*/
+float costoAB(AB a){
+    float costo;
+
+    if(!a)
+        costo=0;
+    else
+        costo=a->info+costoAB(a->izq)+costoAB(a->der);
+    return(costo);
+}
+
+/*Funcion para contar el numero de hojas de un AB*/
+int cuentaHojasAB(AB a){
+    int hojas;
+
+    if(!a)
+        hojas=0;
+    else
+        if(!a->izq && !a->der)
+            hojas=1;
+        else
+            hojas=cuentaHojasAB(a->izq)+cuentaHojasAB(a->der);
+    return(hojas);
 }
