@@ -82,3 +82,29 @@ void enOrden(AB a){
         enOrden(a->der);
     }
 }
+
+/*RECORRIDO enOrden*/
+void posOrden(AB a){
+    if(a){
+        posOrden(a->izq);
+        posOrden(a->der);
+        printf("%d\t", a->info);
+    }
+}
+
+/*-----Funciones Recorrido--------*/
+/*Funcion para calcular el peso (No. de nodos) de un arbol*/
+int calculaPesoAB(AB a){
+    int res;
+
+    if(!a)
+        res=0;
+    else
+        res=1+calculaPesoAB(a->izq)+calculaPesoAB(a->der);
+    return(res);
+}
+
+/*Calcular el peso de un arbol por medio de un parametro por referencia*/
+void calculaPesoAB(AB a, int *peso){
+    
+}
