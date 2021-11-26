@@ -141,3 +141,53 @@ int cuentaHojasAB(AB a){
             hojas=cuentaHojasAB(a->izq)+cuentaHojasAB(a->der);
     return(hojas);
 }
+
+/*Funcion para calcular el numero de nodos internos de un AB*/
+/*El problema de hacerlo con recursividad es que no sabria distinguir
+  entre la raiz del arbol y los nodos internos.
+  Entonces se recurre a una operacion aritmetica -> internos=peso(a)-hojas(a)-1
+    La op aritmetica no se cumple cuando el peso del arbol es menor que 3 
+    por lo que se le asigna directamente 0*/
+int interAB(AB a){
+    int inter, p=calcPesoAB(a);
+
+    if(p<3)
+        inter=0;
+    else
+        inter=p-cuentaHojasAB(a)-1;
+    return(inter);
+}
+
+/*Funcion que determina si un dato esta dentro del AB*/
+int busqAB(AB a, int dato){
+    int res;
+
+    if(!a)
+        res=0;
+    else
+        if(a->info==dato)
+            res=1;
+        else
+            res=busqAB(a->izq, dato) || busqAB(a->der, dato);
+            /*El OR nos asegura que si lo encuentra, entonces 
+              ya no lo va a intentar por el otro lado 
+              (por la evaulacion de circuito corto) de la computadora*/
+    return(res);
+}
+
+/*Funcion que determina si un dato esta dentro del ABO (Ordenado)*/
+int busqABO(AB a, int dato){
+    int res;
+
+    if(!a)
+        res=0;
+    else
+        if(a->info==dato)
+            res=1;
+        else
+            if(dato < a->info)
+                res=busqABO(a->izq, dato);
+            else
+                res=busqABO(a->der, dato);
+    return(res);
+}
