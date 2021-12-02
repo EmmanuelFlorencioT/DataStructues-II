@@ -191,3 +191,89 @@ int busqABO(AB a, int dato){
                 res=busqABO(a->der, dato);
     return(res);
 }
+
+/*Funcion para hacer eliminaciones en arboles binarios*/
+/*  Caso1:El dato a eliminar se encuentra en un nodo hoja, solo se elimina
+    Caso2:El dato a eliminar se encuentra en un nodo con 1 sucesor, este sucesor toma su lugar
+    Caso3:El dato a eliminar tiene 2 sucesores, entonces:
+        3.1) Se sustituye por el dato más hacia la derecha del subarbol izquierdo
+        3.2) Se sustituye por el dato más hacia la izquierda del subarbol derecho*/
+int elimABO(AB *a, int dato){
+    int res;
+    AB aux, ant;
+
+    if(!a)
+        res=0;
+    else
+        if(dato == (*a)->info){
+            aux=*a;
+            /*Casos*/
+            if(!(*a)->izq && !(*a)->der)
+                *a=NULL;
+            else
+                if(!(*a)->izq) /*Podemos concluir que entonces si tiene nodo a la derecha*/
+                    *a=(*a)->der;
+                else
+                    if(!(*a)->der) /*Podemos concluir que tiene solamente nodo a la izquierda*/
+                        *a=(*a)->izq;
+                    else{ /*Podemos concluir que tiene ambos nodos*/
+                      /*Se aplica el criterio del subarbol IZQ*/
+                        aux=(*a)->izq;
+                        while(aux->der){ /*Debemos recorrer el auxiliar hasta el nodo de mas a la derecha*/
+                            ant=aux;
+                            aux=aux->der;
+                        }
+                        (*a)->info=aux->info; /*Se hace la eliminacion del dato por sobreescritura*/
+                        if(aux == (*a)->izq) /*Se revisa si aux no se movio con el ciclo*/
+                            (*a)->izq=aux->izq;
+                        else
+                            ant->der=aux->izq;
+                    }
+            free(aux);
+            res=1;
+        }
+        else
+            if(dato < (*a)->info)
+                res=elimABO(&(*a)->izq, dato);
+            else
+                res=elimABO(&(*a)->der, dato);
+}
+
+/*Funcion para hacer eliminaciones en un arbol binario ordenado Optimizado*/
+int elimABO_optim(AB *a, int dato){
+    int res;
+    AB aux, ant;
+
+    if(!a)
+        res=0;
+    else
+        if(dato == (*a)->info){
+            aux=*a;
+            /*Casos*/
+            if(!(*a)->izq)
+                *a=(*a)->der; /*No importa si la derecha es NULL*/
+            else
+                if(!(*a)->der)
+                    *a=(*a)->izq; /*No importa si la izquierda es NULL*/
+                else{
+                  /*Se aplica el criterio del subarbol IZQ*/
+                    aux=(*a)->izq;
+                    while(aux->der){ /*Debemos recorrer el auxiliar hasta el nodo de mas a la derecha*/
+                        ant=aux;
+                        aux=aux->der;
+                    }
+                    (*a)->info=aux->info; /*Se hace la eliminacion del dato por sobreescritura*/
+                    if(aux == (*a)->izq) /*Se revisa si aux no se movio con el ciclo*/
+                        (*a)->izq=aux->izq;
+                    else
+                        ant->der=aux->izq;
+                }
+            free(aux);
+            res=1;
+        }
+        else
+            if(dato < (*a)->info)
+                res=elimABO_optim(&(*a)->izq, dato);
+            else
+                res=elimABO_optim(&(*a)->der, dato);
+}
